@@ -336,6 +336,8 @@ export default function RadarScene({
                   planePosition.x, planePosition.y, planePosition.z
                 ])}
                 itemSize={3}
+                args={[new Float32Array([0, 4.5, 0,
+                  planePosition.x, planePosition.y, planePosition.z]), 3]}
               />
             </bufferGeometry>
             <lineBasicMaterial color="#ef4444" linewidth={2} />
