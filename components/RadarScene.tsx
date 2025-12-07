@@ -4,6 +4,9 @@ import { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Grid } from '@react-three/drei';
 import * as THREE from 'three';
+import { useGLTF } from '@react-three/drei';
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
+import { useLoader } from '@react-three/fiber';
 
 interface RadarSceneProps {
   planePosition: { x: number; y: number; z: number };
@@ -15,25 +18,11 @@ interface RadarSceneProps {
 }
 
 function RadarTower() {
+  const  {scene}  = useGLTF("/models/radar.glb"); // ← your GLB file
+
   return (
     <group position={[0, 0, 0]}>
-      {/* Tower base */}
-      <mesh position={[0, 2, 0]}>
-        <cylinderGeometry args={[0.5, 0.8, 4, 8]} />
-        <meshStandardMaterial color="#4a5568" metalness={0.7} roughness={0.3} />
-      </mesh>
-      
-      {/* Radar dish */}
-      <mesh position={[0, 4.5, 0]} rotation={[Math.PI / 6, 0, 0]}>
-        <cylinderGeometry args={[1.5, 1.5, 0.3, 32]} />
-        <meshStandardMaterial color="#2d3748" metalness={0.8} roughness={0.2} />
-      </mesh>
-      
-      {/* Center sphere */}
-      <mesh position={[0, 4.5, 0]}>
-        <sphereGeometry args={[0.3, 16, 16]} />
-        <meshStandardMaterial color="#48bb78" emissive="#48bb78" emissiveIntensity={0.5} />
-      </mesh>
+      <primitive object={scene} scale={0.3}/>
     </group>
   );
 }
@@ -72,6 +61,9 @@ interface PlaneModelProps {
 
 function PlaneModel({ position, rotation, geometry, isDetected, stealthMode }: PlaneModelProps) {
   const planeRef = useRef<THREE.Group>(null);
+  const  b2bomber=useGLTF("/models/Fighter.glb")
+  const fighter=useLoader(FBXLoader,"/models/fa_n26_le.fbx")
+  const conventional=useGLTF("/models/2_plane.glb")
   
   const planeColor = stealthMode ? "#22c55e" : isDetected ? "#ef4444" : "#3b82f6";
   
@@ -82,27 +74,14 @@ function PlaneModel({ position, rotation, geometry, isDetected, stealthMode }: P
         // Angular, flat design (like F-117 or B-2)
         return (
           <group>
-            {/* Main body - flat diamond shape */}
-            <mesh>
-              <boxGeometry args={[3, 0.3, 2]} />
-              <meshStandardMaterial color={planeColor} metalness={0.8} roughness={0.2} />
-            </mesh>
-            
-            {/* Wings - angled */}
-            <mesh position={[-2, 0, 0]} rotation={[0, 0, Math.PI / 12]}>
-              <boxGeometry args={[2, 0.2, 3]} />
-              <meshStandardMaterial color={planeColor} metalness={0.8} roughness={0.2} />
-            </mesh>
-            <mesh position={[2, 0, 0]} rotation={[0, 0, -Math.PI / 12]}>
-              <boxGeometry args={[2, 0.2, 3]} />
-              <meshStandardMaterial color={planeColor} metalness={0.8} roughness={0.2} />
-            </mesh>
-            
-            {/* Cockpit */}
-            <mesh position={[0, 0.3, 0.5]}>
-              <boxGeometry args={[0.6, 0.4, 0.8]} />
-              <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.1} />
-            </mesh>
+                {/* Main body - flat diamond shape */}
+            <primitive 
+              colo
+              object={b2bomber.scene} 
+              scale={0.5}          // adjust scale to match previous size
+              position={[0, 0, 0]}  // same origin as before
+              rotation={[0, 0, 0]}  // adjust if needed to match wings orientation
+            />
           </group>
         );
       
@@ -111,29 +90,14 @@ function PlaneModel({ position, rotation, geometry, isDetected, stealthMode }: P
         return (
           <group>
             {/* Fuselage */}
-            <mesh>
-              <cylinderGeometry args={[0.3, 0.4, 3, 8]} />
-              <meshStandardMaterial color={planeColor} metalness={0.7} roughness={0.3} />
-            </mesh>
-            
-            {/* Wings */}
-            <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-              <boxGeometry args={[0.2, 4, 1.5]} />
-              <meshStandardMaterial color={planeColor} metalness={0.7} roughness={0.3} />
-            </mesh>
-            
-            {/* Tail */}
-            <mesh position={[0, 0.5, -1.2]} rotation={[0, 0, 0]}>
-              <boxGeometry args={[0.1, 1.2, 0.8]} />
-              <meshStandardMaterial color={planeColor} metalness={0.7} roughness={0.3} />
-            </mesh>
-            
-            {/* Cockpit */}
-            <mesh position={[0, 0.4, 1]}>
-              <sphereGeometry args={[0.35, 16, 16]} />
-              <meshStandardMaterial color="#1e293b" metalness={0.9} roughness={0.1} transparent opacity={0.8} />
-            </mesh>
-          </group>
+            <primitive 
+              colo
+              object={fighter} 
+              scale={0.003}          // adjust scale to match previous size
+              position={[0, 0, 0]}  // same origin as before
+              rotation={[0, 0, 0]}  // adjust if needed to match wings orientation
+            />
+            </group>
         );
       
       case 'conventional':
@@ -141,22 +105,12 @@ function PlaneModel({ position, rotation, geometry, isDetected, stealthMode }: P
         return (
           <group>
             {/* Main body */}
-            <mesh>
-              <boxGeometry args={[2.5, 0.8, 1.5]} />
-              <meshStandardMaterial color={planeColor} metalness={0.5} roughness={0.5} />
-            </mesh>
-            
-            {/* Wings */}
-            <mesh position={[0, -0.2, 0]} rotation={[0, 0, 0]}>
-              <boxGeometry args={[5, 0.3, 2]} />
-              <meshStandardMaterial color={planeColor} metalness={0.5} roughness={0.5} />
-            </mesh>
-            
-            {/* Tail */}
-            <mesh position={[0, 0.5, -1.5]}>
-              <boxGeometry args={[1.5, 1.5, 0.3]} />
-              <meshStandardMaterial color={planeColor} metalness={0.5} roughness={0.5} />
-            </mesh>
+              <primitive 
+              object={conventional.scene} 
+              scale={5}          // adjust scale to match previous size
+              position={[0, 0, 0]}  // same origin as before
+              rotation={[0, 0, 0]}  // adjust if needed to match wings orientation
+            />
           </group>
         );
     }
