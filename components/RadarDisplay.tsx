@@ -221,10 +221,8 @@ export default function RadarDisplay({ result, radarRange, planePosition, stealt
                   className={`h-full transition-all ${
                     stealthMode
                       ? 'bg-green-500'
-                      : result.detectionProbability > 0.7
-                      ? 'bg-red-500'
                       : result.detectionProbability > 0.3
-                      ? 'bg-yellow-500'
+                      ? 'bg-red-500'
                       : 'bg-green-500'
                   }`}
                   style={{ width: stealthMode ? '0%' : `${result.detectionProbability * 100}%` }}

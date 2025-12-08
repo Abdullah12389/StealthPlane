@@ -5,7 +5,7 @@ import RadarScene from '@/components/RadarScene';
 import RadarScene2D from '@/components/RadarScene2D';
 import ControlPanel from '@/components/ControlPanel';
 import RadarDisplay from '@/components/RadarDisplay';
-import { PlaneParameters, RadarParameters, calculateRadarReturn, RadarResult } from '@/lib/radarPhysics';
+import { PlaneParameters, RadarParameters, calculateRadarReturn, RadarResult, getOptimalStealthParams, isOptimalStealthConfig } from '@/lib/radarPhysics';
 import { Button } from '@/components/ui/button';
 import { Home, Shield, Box, Grid3x3 } from 'lucide-react';
 import Link from 'next/link';
@@ -45,6 +45,13 @@ export default function RadarSimulationPage() {
     const result = calculateRadarReturn(planeParams, radarParams);
     setRadarResult(result);
   }, [planeParams, radarParams]);
+  
+  // Auto-deactivate stealth mode if parameters don't match optimal config
+  useEffect(() => {
+    if (stealthMode && !isOptimalStealthConfig(planeParams)) {
+      setStealthMode(false);
+    }
+  }, [planeParams, stealthMode]);
   
   // Update plane rotation based on angle to radar
   const planeRotation = {
@@ -92,7 +99,15 @@ export default function RadarSimulationPage() {
   };
 
   const toggleStealthMode = () => {
-    setStealthMode(!stealthMode);
+    if (!stealthMode) {
+      // Enabling stealth mode: apply optimal parameters
+      const optimalParams = getOptimalStealthParams(planeParams.position);
+      setPlaneParams(optimalParams);
+      setStealthMode(true);
+    } else {
+      // Disabling stealth mode
+      setStealthMode(false);
+    }
   };
 
   const toggleSceneMode = () => {
@@ -181,7 +196,7 @@ export default function RadarSimulationPage() {
                   </>
                 )}
                 {stealthMode && (
-                  <span className="text-green-400 font-semibold"> STEALTH MODE: Watch how waves bend around the plane and never return to the radar!</span>
+                  <span className="text-green-400 font-semibold"> STEALTH MODE ACTIVE: Optimal parameters applied (RCS=0.001m², Absorption=95%, Angle=0°). Any manual parameter change will deactivate stealth mode.</span>
                 )}
               </p>
             </div>

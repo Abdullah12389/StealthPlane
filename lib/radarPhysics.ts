@@ -30,6 +30,45 @@ export interface RadarResult {
 }
 
 /**
+ * Optimal stealth parameters based on RCS equation:
+ * Pr = (Pt × G² × λ² × σ) / ((4π)³ × R⁴)
+ * 
+ * To minimize detection probability (Pr), we minimize σ (RCS) by:
+ * - Using minimum radarCrossSection (0.001 m²)
+ * - Maximum absorption coefficient (0.95 = 95%)
+ * - Stealth geometry with angular surfaces
+ * - Optimal angle (0° front-facing for lowest RCS)
+ */
+export const OPTIMAL_STEALTH_PARAMS = {
+  radarCrossSection: 0.001,
+  absorptionCoefficient: 0.95,
+  geometry: 'stealth' as const,
+  angleToRadar: 0,
+};
+
+/**
+ * Check if current plane parameters match optimal stealth configuration
+ */
+export function isOptimalStealthConfig(params: PlaneParameters): boolean {
+  return (
+    params.radarCrossSection === OPTIMAL_STEALTH_PARAMS.radarCrossSection &&
+    params.absorptionCoefficient === OPTIMAL_STEALTH_PARAMS.absorptionCoefficient &&
+    params.geometry === OPTIMAL_STEALTH_PARAMS.geometry &&
+    params.angleToRadar === OPTIMAL_STEALTH_PARAMS.angleToRadar
+  );
+}
+
+/**
+ * Get optimal stealth parameters while preserving position
+ */
+export function getOptimalStealthParams(currentPosition: { x: number; y: number; z: number }): PlaneParameters {
+  return {
+    ...OPTIMAL_STEALTH_PARAMS,
+    position: currentPosition,
+  };
+}
+
+/**
  * Calculate effective RCS based on plane geometry and angle
  */
 export function calculateEffectiveRCS(params: PlaneParameters): number {
@@ -116,7 +155,8 @@ export function calculateRadarReturn(
     detectionProbability = Math.max(0, (SNR + 10) / 20);
   }
   
-  const isDetected = detectionProbability > 0.5;
+  // Stealth is successful only when detection probability is below 30%
+  const isDetected = detectionProbability > 0.3;
   
   return {
     distance,

@@ -78,7 +78,7 @@ function PlaneModel({ position, rotation, geometry, isDetected, stealthMode }: P
             <primitive 
               colo
               object={b2bomber.scene} 
-              scale={0.5}          // adjust scale to match previous size
+              scale={0.3}          // adjust scale to match previous size
               position={[0, 0, 0]}  // same origin as before
               rotation={[0, 0, 0]}  // adjust if needed to match wings orientation
             />

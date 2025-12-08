@@ -79,8 +79,10 @@ export default function Home() {
               The simulator uses the <span className="text-green-500 font-mono">radar equation</span> to 
               calculate received power and detection probability:
             </p>
-            <div className="bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
-              Pr = (Pt × G² × λ² × σ) / ((4π)³ × R⁴)
+            <div className="bg-slate-900 rounded-lg font-extrabold font-mono text-2xl overflow-x-auto">
+              <div>Pr = (Pt × G² × λ² × σ)</div> 
+              <div className="pl-12">-----------------------</div>
+              <div className="pl-20">      ((4π)³ × R⁴)</div>
             </div>
             <ul className="space-y-2 list-disc list-inside">
               <li><strong>Pt:</strong> Transmitted power (adjustable radar power)</li>
